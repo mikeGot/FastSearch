@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
+    container_name: elasticsearch
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - '9200:9200'
+
+  elt:
+    build: .
+    depends_on:
+      - db
+      - elasticsearch
+
+  db:
+    image: postgres:14.1-alpine
+    container_name: database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+#    volumes:
+#      - db:/var/lib/postgresql/data
+volumes:
+  db:
+    driver: local
+
+
+
