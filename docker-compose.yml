@@ -15,11 +15,11 @@ services:
     ports:
       - '9200:9200'
 
-  elt:
-    build: .
-    depends_on:
-      - db
-      - elasticsearch
+#  elt:
+#    build: .
+#    depends_on:
+#      - db
+#      - elasticsearch
 
   db:
     image: postgres:14.1-alpine

@@ -35,7 +35,7 @@ def create_table():
     finally:
         cursor.close()
 
-
+# use "execute many" as a variant
 def insert_data(doc):
     cursor = conn.cursor()
     try:
@@ -50,22 +50,37 @@ def insert_data(doc):
         cursor.close()
 
 
-# def select_data():
-#     try:
-#         cursor.execute(f"SELECT id FROM public.document")
-#         all_id = cursor.fetchall()
-#         logger.info(all_id)
-#     except Exception as e:
-#         logger.exception(e)
-#
-#     finally:
-#         cursor.close()
-#         conn.close()
-#         print("Соединение с PostgreSQL закрыто")
+def delete_data(id):
+    cursor = conn.cursor()
+    try:
+        cursor.execute(f"DELETE FROM public.document WHERE id=%s", str(id))
+        conn.commit()
+
+    except Exception as e:
+        logger.exception(e)
+
+    finally:
+        cursor.close()
+
+
+def select_data(tuple_of_id: tuple):
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM public.document WHERE id IN %s ORDER BY created_date;", (tuple_of_id, ))
+        all_id = cursor.fetchall()
+        return all_id
+    except Exception as e:
+        logger.exception(e)
+
+    finally:
+        cursor.close()
+        conn.close()
 
 
 if __name__ == "__main__":
-    pass
+    a = select_data((1, 2))
+    for i in a:
+        print(i)
     # try:
     #     create_table()
     # except Exception:
