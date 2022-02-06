@@ -1,17 +1,18 @@
-es_host = "192.168.1.103"
+es_host = "192.168.1.103"  # указать ip внешнего интерфейса
 es_port = 9200
 es_index = "document"
 
 db_user = "postgres"
 db_password = "postgres"
-db_host = "192.168.1.103"
+db_host = "192.168.1.103"  # указать ip внешнего интерфейса
 db_port = "5432"
 db_name = "postgres"
 
 csv_path = "posts.csv"
 
+# не менять
 server_host = "0.0.0.0"
-server_port = 5001
+server_port = 8000
 
 
 # es_host = os.environ.get("ES_HOST")
