@@ -1,14 +1,19 @@
-from elasticsearch import Elasticsearch
+import elasticsearch
+from elasticsearch import Elasticsearch, helpers
 from loguru import logger
 
 
-def connect_elasticsearch(host: str, port: int):
+host = "192.168.1.103"
+port = 9200
+es_index = "document"
+
+
+def connect(host: str, port: int):
     _es = None
     _es = Elasticsearch([{'host': host, 'port': port}])
-    if _es.ping():
-        logger.info('ES Yay Connect')
-    else:
+    if not _es.ping():
         logger.error('ES Awww it could not connect!')
+        raise elasticsearch.ConnectionError
     return _es
 
 
@@ -52,26 +57,64 @@ doc_scheme = {
     }
 }
 
-es_object = connect_elasticsearch(host="192.168.1.103", port=9200)
-
-
-def csv_to_es(doc):
-    data = {
-        "doc_text": doc.text,
-        "doc_id": doc.id
-    }
-    try:
-        es_object.index(index='document', document=data)
-    except Exception as e:
-        logger.exception(e)
+# es_object = connect_elasticsearch(host=host, port=port)
 
 
 def create_index():
-    es_object.create(index="document", document=doc_scheme, id="1")
+    es_object = connect(host=host, port=port)
+    es_object.create(index=es_index, document=doc_scheme, id="1")
+    es_object.close()
 
 
-def put_to_elastic(list_of_documents):
+def put(list_of_documents):
+    es_object = connect(host=host, port=port)
+    action = list()
     for d in list_of_documents:
-        csv_to_es(d)
+        data = {
+            "_index": es_index,
+            "_source": {
+                "doc_text": d.text,
+                "doc_id": d.id
+            }
+        }
+        action.append(data)
+    helpers.bulk(es_object, action)
     logger.info("Данные успешно импортировались в Elastic")
 
+
+def search(user_query: str = None, doc_id: int = None):
+    es_object = connect(host=host, port=port)
+    if user_query is not None:
+        query_body = {
+                "match": {
+                    "doc_text": user_query
+                    }
+                }
+        result = es_object.search(index=es_index, query=query_body, size=20)
+        all_hits = result.get("hits").get("hits")
+
+        list_of_search_id = [id.get("_source").get("doc_id") for id in all_hits]
+
+        return list_of_search_id
+
+    elif doc_id is not None:
+        query_body = {
+            "match": {
+                "doc_id": doc_id
+            }
+        }
+        result = es_object.search(index=es_index, query=query_body, size=1)
+        inner_id = result.get("hits").get("hits")[0].get("_id")
+        es_object.close()
+        return inner_id
+
+
+def delete(doc_id):
+    es_object = connect(host=host, port=port)
+    inner_id = search(doc_id=doc_id)
+    es_object.delete(index=es_index, id=inner_id)
+    es_object.close()
+
+
+if __name__ == "__main__":
+    print(search("парень"))

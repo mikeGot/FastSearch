@@ -21,7 +21,7 @@ def create_table():
             id integer primary key,\
             rubrics text [],\
             text text,\
-            created_date timestamp);", )
+            created_date timestamp);")
 
         conn.commit()
         logger.info("Таблица успешно создалась")
@@ -35,13 +35,16 @@ def create_table():
     finally:
         cursor.close()
 
-# use "execute many" as a variant
-def insert_data(doc):
+
+# use "executemany" as a variant
+def insert_data(list_of_doc):
+    doc_tuple = tuple([(doc.id, doc.rubrics, doc.text, doc.created_date) for doc in list_of_doc])
     cursor = conn.cursor()
     try:
-        cursor.execute(f"INSERT INTO public.document (id, rubrics, text, created_date ) \
-        VALUES (%s, %s, %s, TIMESTAMP %s)", (doc.id, doc.rubrics, doc.text, doc.created_date))
+        query = "INSERT INTO public.document (id, rubrics, text, created_date ) VALUES (%s, %s, %s, TIMESTAMP %s)"
+        cursor.executemany(query, doc_tuple)
         conn.commit()
+        logger.info("Данные успешно импортировались в БД")
 
     except Exception as e:
         logger.exception(e)
@@ -50,10 +53,10 @@ def insert_data(doc):
         cursor.close()
 
 
-def delete_data(id):
+def delete_data(doc_id):
     cursor = conn.cursor()
     try:
-        cursor.execute(f"DELETE FROM public.document WHERE id=%s", str(id))
+        cursor.execute(f"DELETE FROM public.document WHERE id=%s", str(doc_id))
         conn.commit()
 
     except Exception as e:
@@ -66,7 +69,7 @@ def delete_data(id):
 def select_data(tuple_of_id: tuple):
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM public.document WHERE id IN %s ORDER BY created_date;", (tuple_of_id, ))
+        cursor.execute("SELECT * FROM public.document WHERE id IN %s ORDER BY created_date;", (tuple(tuple_of_id), ))
         all_id = cursor.fetchall()
         return all_id
     except Exception as e:
@@ -74,7 +77,6 @@ def select_data(tuple_of_id: tuple):
 
     finally:
         cursor.close()
-        conn.close()
 
 
 if __name__ == "__main__":
