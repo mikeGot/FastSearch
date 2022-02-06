@@ -2,10 +2,11 @@ import elasticsearch
 from elasticsearch import Elasticsearch, helpers
 from loguru import logger
 
+import config
 
-host = "192.168.1.103"
-port = 9200
-es_index = "document"
+host = config.es_host
+port = config.es_port
+es_index = config.es_index
 
 
 def connect(host: str, port: int):
@@ -116,5 +117,3 @@ def delete(doc_id):
     es_object.close()
 
 
-if __name__ == "__main__":
-    print(search("парень"))

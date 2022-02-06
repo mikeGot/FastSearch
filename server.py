@@ -2,6 +2,7 @@ from flask import Flask
 from loguru import logger
 import db
 import elastic
+import config
 
 app = Flask(__name__)
 
@@ -47,4 +48,4 @@ def delete_document(doc_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host=config.server_host, port=config.server_port)
