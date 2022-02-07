@@ -31,10 +31,5 @@ def parse_csv(filename) -> list:
         return csv_dict_reader(f_obj)
 
 
-# if __name__ == "__main__":
-#     with open("posts.csv") as f_obj:
-#         csv_dict_reader(f_obj)
 
-    # for d in list_of_documents:
-    #     db.insert_data(d)
 

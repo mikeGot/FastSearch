@@ -27,7 +27,6 @@ class DeleteResponse(BaseModel):
     doc_id: int
 
 
-
 def my_schema():
     openapi_schema = get_openapi(
         title="This is a FastSearch app",
@@ -56,7 +55,6 @@ def get_documents(text_query: str):
             result_list.append(data_dict)
 
         return {"result": result_list}
-        # return result_list
     else:
         raise HTTPException(status_code=404, detail="Document not found")
 
@@ -73,16 +71,3 @@ def delete_document(doc_id: int):
         logger.exception(ie)
         raise HTTPException(status_code=404, detail="Invalid ID")
 
-# удаление с помощью метода post
-# @app.post("/document/{doc_id}")
-# def delete_document_delete(doc_id):
-#     try:
-#         elastic.delete(doc_id)
-#         return {"result": {"status": "success", "doc_id": doc_id}}
-#     except IndexError as ie:
-#         logger.exception(ie)
-#         return {"result": {"status": "error", "reason": "Invalid ID"}}
-
-
-# if __name__ == "__main__":
-#     app.run(debug=True, host=config.server_host, port=config.server_port)

@@ -105,9 +105,4 @@ def select_data(tuple_of_id: tuple):
         conn.close()
 
 
-if __name__ == "__main__":
-    try:
-        create_table()
-    except Exception:
-        logger.info("Таблица уже созданна")
 

@@ -1,10 +1,10 @@
-es_host = "192.168.1.103"  # указать ip внешнего интерфейса
+es_host = "192.168.1.100"  # указать ip внешнего интерфейса
 es_port = 9200
 es_index = "document"
 
 db_user = "postgres"
 db_password = "postgres"
-db_host = "192.168.1.103"  # указать ip внешнего интерфейса
+db_host = "192.168.1.100"  # указать ip внешнего интерфейса
 db_port = "5432"
 db_name = "postgres"
 
